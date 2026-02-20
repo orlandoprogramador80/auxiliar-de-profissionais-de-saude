@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" id="themeColorMeta" />
+
+  <title>Prontuário Clínico - PWA</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Menu principal">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">🦷</div>
+        <div class="brand-text">
+          <strong>Prontuário</strong>
+          <span>Clínico • PWA</span>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item is-active" data-view="dashboard" type="button">Dashboard</button>
+        <button class="nav-item" data-view="agenda" type="button">Agenda</button>
+        <button class="nav-item" data-view="pacientes" type="button">Pacientes</button>
+        <button class="nav-item" data-view="documentos" type="button">Documentos</button>
+        <button class="nav-item" data-view="financeiro" type="button">Livro Caixa</button>
+        <button class="nav-item" data-view="config" type="button">Configurações</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="toggleTheme" class="btn secondary" type="button" aria-label="Alternar tema">
+          <span id="themeIcon" aria-hidden="true">🌙</span>
+          <span id="themeLabel">Modo escuro</span>
+        </button>
+
+        <button id="installBtn" class="btn primary" type="button" hidden>
+          Instalar App
+        </button>
+
+        <p class="hint">
+          Offline pronto (Service Worker).<br/>
+          Tema salva automaticamente.
+        </p>
+      </div>
+    </aside>
+
+    <main class="main" role="main">
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger" id="hamburger" type="button" aria-label="Abrir menu">
+            ☰
+          </button>
+          <div class="page-title">
+            <h1 id="pageTitle">Dashboard</h1>
+            <p id="pageSubtitle">Visão geral do seu consultório</p>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="chip" title="Perfil">
+            <span class="dot" aria-hidden="true"></span>
+            <span id="profileName">Dr(a). Orlando</span>
+          </div>
+        </div>
+      </header>
+
+      <section class="content">
+        <!-- DASHBOARD -->
+        <div class="view is-visible" id="view-dashboard">
+          <div class="grid">
+            <article class="card">
+              <h2>Atendimentos hoje</h2>
+              <p class="metric">8</p>
+              <p class="muted">Agenda inteligente integrada</p>
+            </article>
+
+            <article class="card">
+              <h2>Pacientes ativos</h2>
+              <p class="metric">124</p>
+              <p class="muted">Cadastro e histórico (SOAP)</p>
+            </article>
+
+            <article class="card">
+              <h2>Meta do mês</h2>
+              <p class="metric">R$ 18.000</p>
+              <p class="muted">Acompanhe metas e alcance</p>
+            </article>
+          </div>
+
+          <article class="card wide">
+            <h2>Atalhos rápidos</h2>
+            <div class="actions">
+              <button class="btn primary" type="button">+ Novo paciente</button>
+              <button class="btn secondary" type="button">+ Novo atendimento (SOAP)</button>
+              <button class="btn secondary" type="button">Gerar documento</button>
+            </div>
+            <p class="muted">Essa é a base do layout. Depois plugamos suas telas reais.</p>
+          </article>
+        </div>
+
+        <!-- AGENDA -->
+        <div class="view" id="view-agenda">
+          <article class="card wide">
+            <h2>Agenda (base)</h2>
+            <p class="muted">Aqui entra seu calendário visível, com horários, status e pacientes.</p>
+
+            <div class="placeholder">
+              <div class="placeholder-row"></div>
+              <div class="placeholder-row"></div>
+              <div class="placeholder-row"></div>
+              <div class="placeholder-row"></div>
+            </div>
+          </article>
+        </div>
+
+        <!-- PACIENTES -->
+        <div class="view" id="view-pacientes">
+          <article class="card wide">
+            <h2>Pacientes (base)</h2>
+            <div class="toolbar">
+              <input class="input" placeholder="Buscar paciente..." />
+              <button class="btn primary" type="button">Adicionar</button>
+            </div>
+
+            <div class="table">
+              <div class="tr th">
+                <div>Nome</div>
+                <div>Telefone</div>
+                <div>Última consulta</div>
+                <div>Ações</div>
+              </div>
+              <div class="tr">
+                <div>Maria Silva</div>
+                <div>(11) 99999-9999</div>
+                <div>12/02/2026</div>
+                <div><button class="btn tiny secondary" type="button">Abrir</button></div>
+              </div>
+              <div class="tr">
+                <div>João Costa</div>
+                <div>(11) 98888-8888</div>
+                <div>05/02/2026</div>
+                <div><button class="btn tiny secondary" type="button">Abrir</button></div>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- DOCUMENTOS -->
+        <div class="view" id="view-documentos">
+          <article class="card wide">
+            <h2>Documentos (base)</h2>
+            <p class="muted">Atestado, laudo, orçamento, recibo, odontograma, patologia… impressão individual.</p>
+
+            <div class="grid">
+              <button class="doc-card" type="button">Atestado</button>
+              <button class="doc-card" type="button">Laudo</button>
+              <button class="doc-card" type="button">Orçamento</button>
+              <button class="doc-card" type="button">Recibo</button>
+              <button class="doc-card" type="button">Ficha SOAP</button>
+              <button class="doc-card" type="button">PDF de Anexos</button>
+            </div>
+          </article>
+        </div>
+
+        <!-- FINANCEIRO -->
+        <div class="view" id="view-financeiro">
+          <article class="card wide">
+            <h2>Livro Caixa (base)</h2>
+            <div class="toolbar">
+              <select class="input">
+                <option>Fevereiro/2026</option>
+                <option>Janeiro/2026</option>
+              </select>
+              <button class="btn primary" type="button">+ Lançamento</button>
+            </div>
+
+            <div class="grid">
+              <article class="mini">
+                <h3>Receitas</h3>
+                <p class="metric small">R$ 9.200</p>
+              </article>
+              <article class="mini">
+                <h3>Despesas</h3>
+                <p class="metric small">R$ 2.450</p>
+              </article>
+              <article class="mini">
+                <h3>Resultado</h3>
+                <p class="metric small">R$ 6.750</p>
+              </article>
+            </div>
+          </article>
+        </div>
+
+        <!-- CONFIG -->
+        <div class="view" id="view-config">
+          <article class="card wide">
+            <h2>Configurações (base)</h2>
+            <p class="muted">Aqui entram dados do profissional (cabeçalho/rodapé em receitas e documentos).</p>
+
+            <div class="form">
+              <label class="label">
+                Nome profissional
+                <input class="input" id="cfgName" placeholder="Ex: Dr. Orlando" />
+              </label>
+
+              <label class="label">
+                Tipo
+                <select class="input" id="cfgTitle">
+                  <option value="dr">Doutor</option>
+                  <option value="dra">Doutora</option>
+                </select>
+              </label>
+
+              <label class="label">
+                Endereço (rodapé)
+                <input class="input" id="cfgAddress" placeholder="Rua, número, bairro, cidade" />
+              </label>
+
+              <button class="btn primary" id="saveConfig" type="button">Salvar</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span class="muted">© 2026 • Prontuário Clínico PWA</span>
+        <span class="muted">Offline + Tema + Instalável</span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
