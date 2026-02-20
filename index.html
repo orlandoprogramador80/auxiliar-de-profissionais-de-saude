@@ -1,243 +1,1333 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" data-theme="dark">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#0b1220" id="themeColorMeta" />
+  <title>Prontuário Clínico • Layout Profissional</title>
 
-  <title>Prontuário Clínico - PWA</title>
+  <style>
+    /* =========================
+       DESIGN SYSTEM (Premium UI)
+       ========================= */
+    :root{
+      --radius-1: 14px;
+      --radius-2: 18px;
+      --radius-3: 24px;
 
-  <!-- PWA -->
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
 
-  <link rel="stylesheet" href="./styles.css" />
+      --ease: cubic-bezier(.2,.8,.2,1);
+      --shadow-1: 0 10px 30px rgba(0,0,0,.18);
+      --shadow-2: 0 18px 70px rgba(0,0,0,.26);
+
+      --ring: 0 0 0 4px rgba(96,165,250,.18);
+      --ring2: 0 0 0 6px rgba(59,130,246,.16);
+
+      /* Light */
+      --bg: #f6f7fb;
+      --bg2: #eef1f7;
+      --panel: rgba(255,255,255,.86);
+      --panel2: rgba(255,255,255,.72);
+      --stroke: rgba(10,20,40,.10);
+      --stroke2: rgba(10,20,40,.14);
+      --text: #0b1220;
+      --muted: rgba(11,18,32,.70);
+      --muted2: rgba(11,18,32,.55);
+
+      --brand: #2563eb;
+      --brand2: #1d4ed8;
+      --good: #22c55e;
+      --warn: #f59e0b;
+      --bad: #ef4444;
+
+      --chip: rgba(37,99,235,.10);
+      --chip2: rgba(34,197,94,.12);
+
+      --glass: blur(14px);
+    }
+
+    html[data-theme="dark"]{
+      --bg: #070b14;
+      --bg2: #0b1220;
+      --panel: rgba(16,24,42,.72);
+      --panel2: rgba(16,24,42,.55);
+      --stroke: rgba(231,234,242,.10);
+      --stroke2: rgba(231,234,242,.14);
+      --text: #e8ecf6;
+      --muted: rgba(232,236,246,.72);
+      --muted2: rgba(232,236,246,.56);
+
+      --brand: #60a5fa;
+      --brand2: #3b82f6;
+
+      --chip: rgba(96,165,250,.12);
+      --chip2: rgba(34,197,94,.14);
+
+      --ring: 0 0 0 4px rgba(96,165,250,.22);
+      --ring2: 0 0 0 6px rgba(96,165,250,.16);
+    }
+
+    *{ box-sizing: border-box; }
+    html,body{ height: 100%; }
+    body{
+      margin: 0;
+      font-family: var(--font);
+      color: var(--text);
+      background:
+        radial-gradient(1200px 800px at 15% 0%, rgba(59,130,246,.22), transparent 55%),
+        radial-gradient(900px 600px at 75% 10%, rgba(34,197,94,.12), transparent 55%),
+        radial-gradient(800px 600px at 80% 90%, rgba(245,158,11,.10), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      overflow: hidden;
+    }
+
+    /* =========================
+       APP SHELL
+       ========================= */
+    .app{
+      height: 100vh;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+    }
+
+    /* Sidebar */
+    .sidebar{
+      position: relative;
+      padding: 18px;
+      border-right: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0));
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      overflow: hidden;
+    }
+
+    .sidebar::before{
+      content:"";
+      position:absolute;
+      inset:-120px -120px auto -120px;
+      height: 260px;
+      background: radial-gradient(circle at 30% 40%, rgba(59,130,246,.30), transparent 62%);
+      pointer-events:none;
+      filter: blur(2px);
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      padding: 14px 14px;
+      border: 1px solid var(--stroke);
+      background: var(--panel);
+      border-radius: var(--radius-3);
+      box-shadow: var(--shadow-1);
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      position: relative;
+      overflow: hidden;
+    }
+    .brand::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(120deg, rgba(96,165,250,.14), transparent 35%, rgba(34,197,94,.10));
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .logo{
+      width: 48px;
+      height: 48px;
+      border-radius: 18px;
+      display:grid;
+      place-items:center;
+      background: linear-gradient(135deg, var(--chip), rgba(255,255,255,.06));
+      border: 1px solid var(--stroke);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+      z-index:1;
+    }
+    .logo svg{ width: 26px; height: 26px; opacity: .95; }
+
+    .brandText{ z-index:1; }
+    .brandText strong{
+      display:block;
+      letter-spacing: .2px;
+      font-size: 16px;
+      line-height: 1.15;
+    }
+    .brandText span{
+      display:block;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .nav{
+      margin-top: 14px;
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Buttons premium */
+    .navBtn{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px 12px;
+      border-radius: var(--radius-2);
+      border: 1px solid var(--stroke);
+      background: var(--panel2);
+      color: var(--text);
+      cursor: pointer;
+      transition: transform .12s var(--ease), background .20s var(--ease), border-color .20s var(--ease), box-shadow .20s var(--ease);
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      box-shadow: 0 0 0 rgba(0,0,0,0);
+      position: relative;
+      overflow:hidden;
+      user-select:none;
+    }
+    .navBtn::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: linear-gradient(120deg, rgba(96,165,250,.16), transparent 45%, rgba(34,197,94,.12));
+      opacity: 0;
+      transition: opacity .20s var(--ease);
+      pointer-events:none;
+    }
+    .navBtn:hover{
+      transform: translateY(-1px);
+      border-color: var(--stroke2);
+      box-shadow: var(--shadow-1);
+    }
+    .navBtn:hover::before{ opacity: 1; }
+    .navBtn:active{ transform: translateY(0); }
+
+    .navBtn.isActive{
+      background: linear-gradient(180deg, rgba(96,165,250,.18), rgba(255,255,255,.04));
+      border-color: rgba(96,165,250,.35);
+      box-shadow: var(--shadow-1);
+    }
+
+    .navLeft{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      min-width: 0;
+      z-index: 1;
+    }
+    .navIcon{
+      width: 34px;
+      height: 34px;
+      border-radius: 14px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,.06);
+      border: 1px solid var(--stroke);
+      flex: 0 0 auto;
+    }
+    .navIcon svg{ width: 18px; height: 18px; opacity:.92; }
+
+    .navTitle{
+      display:flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .navTitle strong{
+      font-size: 13px;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .navTitle span{
+      font-size: 11px;
+      color: var(--muted2);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+
+    .navBadge{
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      z-index: 1;
+    }
+
+    .sideFooter{
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--stroke);
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btnRow{
+      display:flex;
+      gap: 10px;
+    }
+
+    .btn{
+      width: 100%;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--radius-2);
+      border: 1px solid var(--stroke);
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+      transition: transform .12s var(--ease), box-shadow .20s var(--ease), background .20s var(--ease), border-color .20s var(--ease);
+      box-shadow: 0 0 0 rgba(0,0,0,0);
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); box-shadow: var(--shadow-1); border-color: var(--stroke2); }
+    .btn:active{ transform: translateY(0); }
+    .btn:focus{ outline: none; box-shadow: var(--shadow-1), var(--ring); }
+
+    .btnPrimary{
+      border-color: rgba(0,0,0,0);
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      color: #fff;
+      box-shadow: 0 12px 45px rgba(37,99,235,.28);
+    }
+    html[data-theme="dark"] .btnPrimary{
+      color: #07101f;
+      box-shadow: 0 12px 45px rgba(96,165,250,.24);
+    }
+
+    .btnGhost{
+      background: rgba(255,255,255,.06);
+    }
+
+    .hint{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.35;
+      margin: 2px 2px 0;
+    }
+
+    /* Main */
+    .main{
+      display:grid;
+      grid-template-rows: auto 1fr auto;
+      min-width:0;
+      overflow:hidden;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--stroke);
+      background: var(--panel);
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+    }
+
+    .topLeft{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width:0;
+    }
+
+    .hamburger{
+      display:none;
+      width: 42px;
+      height: 42px;
+      border-radius: 16px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      cursor:pointer;
+      transition: transform .12s var(--ease), box-shadow .20s var(--ease);
+    }
+    .hamburger:hover{ transform: translateY(-1px); box-shadow: var(--shadow-1); }
+
+    .titleWrap{ min-width:0; }
+    .titleWrap h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: .2px;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+    .titleWrap p{
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+    }
+
+    .topRight{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .pill{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+    }
+    .statusDot{
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--good);
+      box-shadow: 0 0 0 4px rgba(34,197,94,.14);
+    }
+    .pill strong{
+      font-size: 12px;
+      letter-spacing: .2px;
+    }
+    .pill span{
+      font-size: 11px;
+      color: var(--muted2);
+      display:block;
+      margin-top: 1px;
+    }
+
+    .content{
+      padding: 18px;
+      overflow:auto;
+    }
+
+    /* Cards / layout */
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card{
+      border: 1px solid var(--stroke);
+      background: var(--panel);
+      border-radius: var(--radius-3);
+      box-shadow: var(--shadow-1);
+      padding: 16px;
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      min-width: 0;
+      overflow:hidden;
+      position: relative;
+    }
+    .card::after{
+      content:"";
+      position:absolute;
+      inset:auto -40% -55% -40%;
+      height: 180px;
+      background: radial-gradient(circle at 50% 30%, rgba(96,165,250,.20), transparent 62%);
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .card h2{
+      margin:0;
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: .25px;
+      position: relative;
+      z-index: 1;
+    }
+    .metric{
+      margin: 10px 0 6px;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: .4px;
+      position: relative;
+      z-index: 1;
+    }
+    .sub{
+      margin:0;
+      font-size: 12px;
+      color: var(--muted);
+      position: relative;
+      z-index: 1;
+    }
+
+    .cardSm{ grid-column: span 4; }
+    .cardMd{ grid-column: span 6; }
+    .cardLg{ grid-column: span 8; }
+    .cardFull{ grid-column: span 12; }
+
+    .toolbar{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+      margin-top: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .input, select, textarea{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      outline:none;
+      transition: box-shadow .20s var(--ease), border-color .20s var(--ease), background .20s var(--ease);
+      font-family: var(--font);
+    }
+    textarea{ resize: vertical; min-height: 120px; }
+    .input:focus, select:focus, textarea:focus{
+      box-shadow: var(--ring2);
+      border-color: rgba(96,165,250,.40);
+      background: rgba(255,255,255,.08);
+    }
+
+    .kpis{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      position: relative;
+      z-index: 1;
+    }
+    .kpi{
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+    .kpi b{ font-size: 12px; }
+    .kpi span{ font-size: 11px; color: var(--muted2); }
+
+    .docGrid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .docBtn{
+      padding: 14px;
+      border-radius: var(--radius-3);
+      border: 1px solid var(--stroke);
+      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      color: var(--text);
+      cursor: pointer;
+      text-align:left;
+      transition: transform .12s var(--ease), box-shadow .20s var(--ease), border-color .20s var(--ease);
+      box-shadow: 0 0 0 rgba(0,0,0,0);
+      position: relative;
+      overflow:hidden;
+      user-select:none;
+      min-height: 92px;
+    }
+    .docBtn::before{
+      content:"";
+      position:absolute;
+      inset:-20px -40px auto -40px;
+      height: 120px;
+      background: radial-gradient(circle at 30% 40%, rgba(96,165,250,.25), transparent 60%);
+      pointer-events:none;
+      opacity:.9;
+    }
+    .docBtn:hover{ transform: translateY(-1px); box-shadow: var(--shadow-1); border-color: var(--stroke2); }
+    .docBtn strong{ display:block; font-size: 13px; position: relative; z-index: 1; }
+    .docBtn span{ display:block; margin-top: 6px; font-size: 11px; color: var(--muted2); position: relative; z-index: 1; }
+
+    /* Table */
+    .table{
+      margin-top: 12px;
+      border: 1px solid var(--stroke);
+      border-radius: var(--radius-3);
+      overflow:hidden;
+      background: rgba(255,255,255,.04);
+      position: relative;
+      z-index: 1;
+    }
+    .row{
+      display:grid;
+      grid-template-columns: 2fr 1.2fr 1.2fr 0.9fr;
+      gap: 10px;
+      padding: 12px 14px;
+      border-top: 1px solid var(--stroke);
+      align-items:center;
+      min-width:0;
+    }
+    .row.head{
+      border-top:none;
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .row div{
+      min-width:0;
+      white-space: nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      font-size: 13px;
+    }
+
+    .pillTiny{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.06);
+      font-size: 12px;
+      cursor:pointer;
+      transition: transform .12s var(--ease), box-shadow .20s var(--ease);
+    }
+    .pillTiny:hover{ transform: translateY(-1px); box-shadow: var(--shadow-1); }
+
+    /* Views */
+    .view{ display:none; }
+    .view.show{ display:block; animation: fadeIn .22s var(--ease); }
+    @keyframes fadeIn{ from{ opacity:0; transform: translateY(4px);} to{ opacity:1; transform:none;} }
+
+    /* Footer */
+    .footer{
+      padding: 14px 18px;
+      border-top: 1px solid var(--stroke);
+      background: var(--panel);
+      backdrop-filter: var(--glass);
+      -webkit-backdrop-filter: var(--glass);
+      display:flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1050px){
+      .cardSm{ grid-column: span 6; }
+      .docGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    @media (max-width: 860px){
+      body{ overflow:auto; }
+      .app{ grid-template-columns: 1fr; }
+      .hamburger{ display:inline-grid; place-items:center; }
+      .sidebar{
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: 340px;
+        max-width: 88vw;
+        transform: translateX(-110%);
+        transition: transform .18s var(--ease);
+        z-index: 50;
+      }
+      .sidebar.open{ transform: translateX(0); }
+      .overlay{
+        display:none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        z-index: 40;
+      }
+      .overlay.show{ display:block; }
+      .content{ padding: 14px; }
+      .row{ grid-template-columns: 1.6fr 1fr; }
+      .row div:nth-child(3), .row div:nth-child(4){ display:none; }
+      .cardSm, .cardMd, .cardLg{ grid-column: span 12; }
+      .docGrid{ grid-template-columns: 1fr; }
+    }
+
+    /* Print base (no futuro você coloca templates individuais) */
+    @media print{
+      .sidebar, .topbar, .footer, .overlay{ display:none !important; }
+      body{ background:#fff !important; color:#000 !important; }
+      .content{ padding: 0 !important; }
+      .card{ box-shadow:none !important; background:#fff !important; }
+    }
+  </style>
 </head>
 
 <body>
+  <div class="overlay" id="overlay"></div>
+
   <div class="app">
-    <aside class="sidebar" aria-label="Menu principal">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
       <div class="brand">
-        <div class="logo" aria-hidden="true">🦷</div>
-        <div class="brand-text">
-          <strong>Prontuário</strong>
-          <span>Clínico • PWA</span>
+        <div class="logo" aria-hidden="true">
+          <!-- Tooth icon -->
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M8.3 3.2c-2.4.7-4.2 3-4.2 5.6 0 3 .9 4.5 1.6 6.3.5 1.3.8 2.6 1 4 .2 1.3 1.3 2.3 2.6 2.3 1.2 0 2.2-.8 2.5-1.9l1.2-4.1c.2-.8.9-1.3 1.7-1.3s1.5.5 1.7 1.3l1.2 4.1c.3 1.1 1.3 1.9 2.5 1.9 1.3 0 2.4-1 2.6-2.3.2-1.4.5-2.7 1-4 .7-1.8 1.6-3.3 1.6-6.3 0-2.6-1.8-4.9-4.2-5.6-1.6-.5-3.2 0-4.4.6-.8.4-1.8.4-2.6 0-1.2-.6-2.8-1.1-4.4-.6Z"
+                  stroke="currentColor" stroke-width="1.5" opacity=".92"/>
+          </svg>
+        </div>
+        <div class="brandText">
+          <strong>Prontuário Clínico</strong>
+          <span>Layout Premium • Claro/Escuro</span>
         </div>
       </div>
 
-      <nav class="nav">
-        <button class="nav-item is-active" data-view="dashboard" type="button">Dashboard</button>
-        <button class="nav-item" data-view="agenda" type="button">Agenda</button>
-        <button class="nav-item" data-view="pacientes" type="button">Pacientes</button>
-        <button class="nav-item" data-view="documentos" type="button">Documentos</button>
-        <button class="nav-item" data-view="financeiro" type="button">Livro Caixa</button>
-        <button class="nav-item" data-view="config" type="button">Configurações</button>
+      <nav class="nav" aria-label="Navegação">
+        <button class="navBtn isActive" data-view="dash" type="button">
+          <div class="navLeft">
+            <div class="navIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 13.5V20h6v-6.5H4Zm10-9V20h6V4.5h-6ZM11 9.5V20h2V9.5h-2Z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="navTitle">
+              <strong>Dashboard</strong>
+              <span>Visão geral e atalhos</span>
+            </div>
+          </div>
+          <span class="navBadge">Hoje</span>
+        </button>
+
+        <button class="navBtn" data-view="agenda" type="button">
+          <div class="navLeft">
+            <div class="navIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M7 3v3M17 3v3M4.5 8.5h15M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="navTitle">
+              <strong>Agenda</strong>
+              <span>Calendário visível</span>
+            </div>
+          </div>
+          <span class="navBadge">8</span>
+        </button>
+
+        <button class="navBtn" data-view="pacientes" type="button">
+          <div class="navLeft">
+            <div class="navIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Z" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M4 20c1.6-3.2 4.2-5 8-5s6.4 1.8 8 5" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="navTitle">
+              <strong>Pacientes</strong>
+              <span>Cadastro e histórico</span>
+            </div>
+          </div>
+          <span class="navBadge">124</span>
+        </button>
+
+        <button class="navBtn" data-view="soap" type="button">
+          <div class="navLeft">
+            <div class="navIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M7 4h10a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M9 8h8M9 12h8M9 16h6" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="navTitle">
+              <strong>Ficha SOAP</strong>
+              <span>Atendimento do dia</span>
+            </div>
+          </div>
+          <span class="navBadge">Novo</span>
+        </button>
+
+        <button class="navBtn" data-view="docs" type="button">
+          <div class="navLeft">
+            <div class="navIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M7 3h7l3 3v15a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M14 3v4a2 2 0 0 0 2 2h4" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="navTitle">
+              <strong>Documentos</strong>
+              <span>Impressão individual</span>
+            </div>
+          </div>
+          <span class="navBadge">PDF</span>
+        </button>
+
+        <button class="navBtn" data-view="finance" type="button">
+          <div class="navLeft">
+            <div class="navIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M6 7h12M6 12h12M6 17h7" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M4 4h16a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <div class="navTitle">
+              <strong>Livro Caixa</strong>
+              <span>Metas e materiais</span>
+            </div>
+          </div>
+          <span class="navBadge">Mês</span>
+        </button>
+
+        <button class="navBtn" data-view="config" type="button">
+          <div class="navLeft">
+            <div class="navIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M19.4 15a7.7 7.7 0 0 0 .1-6l-2.1.4a6 6 0 0 0-1.2-1.2l.4-2.1a7.7 7.7 0 0 0-6-.1l.4 2.1a6 6 0 0 0-1.2 1.2L7 6.9a7.7 7.7 0 0 0-.1 6l2.1-.4a6 6 0 0 0 1.2 1.2l-.4 2.1a7.7 7.7 0 0 0 6 .1l-.4-2.1a6 6 0 0 0 1.2-1.2l2.1.4Z" stroke="currentColor" stroke-width="1.5" opacity=".9"/>
+              </svg>
+            </div>
+            <div class="navTitle">
+              <strong>Configurações</strong>
+              <span>Dados do profissional</span>
+            </div>
+          </div>
+          <span class="navBadge">Perfil</span>
+        </button>
       </nav>
 
-      <div class="sidebar-footer">
-        <button id="toggleTheme" class="btn secondary" type="button" aria-label="Alternar tema">
-          <span id="themeIcon" aria-hidden="true">🌙</span>
-          <span id="themeLabel">Modo escuro</span>
-        </button>
+      <div class="sideFooter">
+        <div class="btnRow">
+          <button class="btn btnGhost" id="toggleTheme" type="button" aria-label="Alternar tema">
+            <span id="themeEmoji" aria-hidden="true">🌙</span>
+            <span id="themeText">Modo escuro</span>
+          </button>
+          <button class="btn btnPrimary" id="quickAction" type="button" aria-label="Atalho rápido">
+            + Ação
+          </button>
+        </div>
 
-        <button id="installBtn" class="btn primary" type="button" hidden>
-          Instalar App
-        </button>
-
-        <p class="hint">
-          Offline pronto (Service Worker).<br/>
-          Tema salva automaticamente.
-        </p>
+        <div class="hint">
+          ✅ Layout premium (sem “botões feios”)<br/>
+          ✅ Claro/Escuro com memória<br/>
+          ✅ Estrutura pronta pra evoluir pro seu prontuário
+        </div>
       </div>
     </aside>
 
-    <main class="main" role="main">
+    <!-- MAIN -->
+    <main class="main">
       <header class="topbar">
-        <div class="topbar-left">
-          <button class="hamburger" id="hamburger" type="button" aria-label="Abrir menu">
-            ☰
-          </button>
-          <div class="page-title">
+        <div class="topLeft">
+          <button class="hamburger" id="hamburger" type="button" aria-label="Abrir menu">☰</button>
+
+          <div class="titleWrap">
             <h1 id="pageTitle">Dashboard</h1>
-            <p id="pageSubtitle">Visão geral do seu consultório</p>
+            <p id="pageSubtitle">Visão geral do consultório</p>
           </div>
         </div>
 
-        <div class="topbar-right">
-          <div class="chip" title="Perfil">
-            <span class="dot" aria-hidden="true"></span>
-            <span id="profileName">Dr(a). Orlando</span>
+        <div class="topRight">
+          <div class="pill" title="Perfil atual">
+            <span class="statusDot" aria-hidden="true"></span>
+            <div>
+              <strong id="profNameTop">Dr(a). Orlando</strong>
+              <span id="profRoleTop">Online • Prontuário</span>
+            </div>
           </div>
         </div>
       </header>
 
       <section class="content">
-        <!-- DASHBOARD -->
-        <div class="view is-visible" id="view-dashboard">
+        <!-- DASH -->
+        <div class="view show" id="view-dash">
           <div class="grid">
-            <article class="card">
+            <article class="card cardSm">
               <h2>Atendimentos hoje</h2>
-              <p class="metric">8</p>
-              <p class="muted">Agenda inteligente integrada</p>
+              <div class="metric">8</div>
+              <p class="sub">Agenda inteligente e procedimentos do dia</p>
             </article>
 
-            <article class="card">
+            <article class="card cardSm">
               <h2>Pacientes ativos</h2>
-              <p class="metric">124</p>
-              <p class="muted">Cadastro e histórico (SOAP)</p>
+              <div class="metric">124</div>
+              <p class="sub">Cadastro + histórico clínico (SOAP)</p>
             </article>
 
-            <article class="card">
+            <article class="card cardSm">
               <h2>Meta do mês</h2>
-              <p class="metric">R$ 18.000</p>
-              <p class="muted">Acompanhe metas e alcance</p>
+              <div class="metric">R$ 18k</div>
+              <p class="sub">Acompanhe metas e alcance</p>
+            </article>
+
+            <article class="card cardFull">
+              <h2>Atalhos rápidos</h2>
+              <div class="toolbar">
+                <button class="btn btnPrimary" type="button" onclick="alert('Aqui você liga o módulo real: Novo Paciente')">+ Novo paciente</button>
+                <button class="btn btnGhost" type="button" onclick="alert('Aqui você liga o módulo real: Atendimento SOAP')">+ Atendimento (SOAP)</button>
+                <button class="btn btnGhost" type="button" onclick="alert('Aqui você liga o módulo real: Gerar Documento')">Gerar documento</button>
+              </div>
+
+              <div class="kpis">
+                <div class="kpi"><b>Documentos</b><span>impressão individual</span></div>
+                <div class="kpi"><b>Anexos</b><span>fotos/radiografias → PDF</span></div>
+                <div class="kpi"><b>IA</b><span>assistente sem apagar abas</span></div>
+              </div>
+
+              <p class="sub" style="margin-top:12px">
+                Esse layout já é “vendável” visualmente. Agora é só plugar seus dados reais por módulo.
+              </p>
             </article>
           </div>
-
-          <article class="card wide">
-            <h2>Atalhos rápidos</h2>
-            <div class="actions">
-              <button class="btn primary" type="button">+ Novo paciente</button>
-              <button class="btn secondary" type="button">+ Novo atendimento (SOAP)</button>
-              <button class="btn secondary" type="button">Gerar documento</button>
-            </div>
-            <p class="muted">Essa é a base do layout. Depois plugamos suas telas reais.</p>
-          </article>
         </div>
 
         <!-- AGENDA -->
         <div class="view" id="view-agenda">
-          <article class="card wide">
-            <h2>Agenda (base)</h2>
-            <p class="muted">Aqui entra seu calendário visível, com horários, status e pacientes.</p>
+          <div class="grid">
+            <article class="card cardLg">
+              <h2>Agenda (base premium)</h2>
+              <p class="sub">Aqui entra seu calendário visível e a agenda inteligente.</p>
 
-            <div class="placeholder">
-              <div class="placeholder-row"></div>
-              <div class="placeholder-row"></div>
-              <div class="placeholder-row"></div>
-              <div class="placeholder-row"></div>
-            </div>
-          </article>
+              <div class="toolbar">
+                <input class="input" placeholder="Buscar por paciente, horário ou procedimento..." />
+                <button class="btn btnPrimary" type="button" onclick="alert('Aqui você abre: Novo agendamento')">+ Agendar</button>
+              </div>
+
+              <div class="table">
+                <div class="row head">
+                  <div>Paciente</div><div>Hora</div><div>Status</div><div>Ação</div>
+                </div>
+                <div class="row">
+                  <div>Maria Silva</div><div>09:00</div><div>Confirmado</div><div><span class="pillTiny">Abrir</span></div>
+                </div>
+                <div class="row">
+                  <div>João Costa</div><div>10:30</div><div>Em atendimento</div><div><span class="pillTiny">Abrir</span></div>
+                </div>
+                <div class="row">
+                  <div>Ana Souza</div><div>14:00</div><div>Pendente</div><div><span class="pillTiny">Abrir</span></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="card cardMd">
+              <h2>Resumo do dia</h2>
+              <div class="kpis">
+                <div class="kpi"><b>Confirmados</b><span>5</span></div>
+                <div class="kpi"><b>Pendentes</b><span>2</span></div>
+                <div class="kpi"><b>Cancelados</b><span>1</span></div>
+              </div>
+              <p class="sub" style="margin-top:10px">Depois a gente conecta isso com seus pacientes e a ficha SOAP.</p>
+            </article>
+          </div>
         </div>
 
         <!-- PACIENTES -->
         <div class="view" id="view-pacientes">
-          <article class="card wide">
-            <h2>Pacientes (base)</h2>
-            <div class="toolbar">
-              <input class="input" placeholder="Buscar paciente..." />
-              <button class="btn primary" type="button">Adicionar</button>
-            </div>
+          <div class="grid">
+            <article class="card cardFull">
+              <h2>Pacientes</h2>
+              <div class="toolbar">
+                <input class="input" placeholder="Pesquisar paciente..." />
+                <button class="btn btnPrimary" type="button" onclick="alert('Aqui você abre: Adicionar paciente')">Adicionar</button>
+              </div>
 
-            <div class="table">
-              <div class="tr th">
-                <div>Nome</div>
-                <div>Telefone</div>
-                <div>Última consulta</div>
-                <div>Ações</div>
+              <div class="table">
+                <div class="row head">
+                  <div>Nome</div><div>Telefone</div><div>Última consulta</div><div>Ações</div>
+                </div>
+                <div class="row">
+                  <div>Maria Silva</div><div>(11) 99999-9999</div><div>12/02/2026</div><div><span class="pillTiny">Ficha</span></div>
+                </div>
+                <div class="row">
+                  <div>João Costa</div><div>(11) 98888-8888</div><div>05/02/2026</div><div><span class="pillTiny">Ficha</span></div>
+                </div>
+                <div class="row">
+                  <div>Ana Souza</div><div>(11) 97777-7777</div><div>28/01/2026</div><div><span class="pillTiny">Ficha</span></div>
+                </div>
               </div>
-              <div class="tr">
-                <div>Maria Silva</div>
-                <div>(11) 99999-9999</div>
-                <div>12/02/2026</div>
-                <div><button class="btn tiny secondary" type="button">Abrir</button></div>
-              </div>
-              <div class="tr">
-                <div>João Costa</div>
-                <div>(11) 98888-8888</div>
-                <div>05/02/2026</div>
-                <div><button class="btn tiny secondary" type="button">Abrir</button></div>
-              </div>
-            </div>
-          </article>
+            </article>
+          </div>
         </div>
 
-        <!-- DOCUMENTOS -->
-        <div class="view" id="view-documentos">
-          <article class="card wide">
-            <h2>Documentos (base)</h2>
-            <p class="muted">Atestado, laudo, orçamento, recibo, odontograma, patologia… impressão individual.</p>
+        <!-- SOAP -->
+        <div class="view" id="view-soap">
+          <div class="grid">
+            <article class="card cardLg">
+              <h2>Ficha Clínica (SOAP) • Base</h2>
+              <p class="sub">Estrutura pronta pra você plugar seu método e atualizar procedimentos do dia.</p>
 
-            <div class="grid">
-              <button class="doc-card" type="button">Atestado</button>
-              <button class="doc-card" type="button">Laudo</button>
-              <button class="doc-card" type="button">Orçamento</button>
-              <button class="doc-card" type="button">Recibo</button>
-              <button class="doc-card" type="button">Ficha SOAP</button>
-              <button class="doc-card" type="button">PDF de Anexos</button>
-            </div>
-          </article>
+              <div class="toolbar">
+                <input class="input" placeholder="Paciente (ex.: Maria Silva)" />
+                <input class="input" placeholder="Data (ex.: 20/02/2026)" />
+              </div>
+
+              <div class="toolbar">
+                <textarea class="input" placeholder="S - Subjetivo (queixa principal, relatos do paciente)"></textarea>
+              </div>
+              <div class="toolbar">
+                <textarea class="input" placeholder="O - Objetivo (achados clínicos, sinais, exames)"></textarea>
+              </div>
+              <div class="toolbar">
+                <textarea class="input" placeholder="A - Avaliação (hipótese/diagnóstico)"></textarea>
+              </div>
+              <div class="toolbar">
+                <textarea class="input" placeholder="P - Plano (conduta, procedimentos, prescrição, retornos)"></textarea>
+              </div>
+
+              <div class="toolbar">
+                <button class="btn btnPrimary" type="button" onclick="alert('Aqui você salva no banco real')">Salvar atendimento</button>
+                <button class="btn btnGhost" type="button" onclick="alert('Aqui você gera documento/receita individual')">Gerar documento</button>
+              </div>
+            </article>
+
+            <article class="card cardMd">
+              <h2>Procedimentos do dia</h2>
+              <p class="sub">Lista editável (base). Depois vira tabela real com histórico.</p>
+
+              <div class="table">
+                <div class="row head">
+                  <div>Procedimento</div><div>Hora</div><div>Status</div><div>Ação</div>
+                </div>
+                <div class="row">
+                  <div>Profilaxia</div><div>10:30</div><div>Feito</div><div><span class="pillTiny">Editar</span></div>
+                </div>
+                <div class="row">
+                  <div>Restauração</div><div>11:15</div><div>Feito</div><div><span class="pillTiny">Editar</span></div>
+                </div>
+              </div>
+
+              <div class="toolbar" style="margin-top:12px">
+                <button class="btn btnGhost" type="button" onclick="alert('Aqui você abre modal para adicionar procedimento')">+ Adicionar</button>
+              </div>
+            </article>
+          </div>
         </div>
 
-        <!-- FINANCEIRO -->
-        <div class="view" id="view-financeiro">
-          <article class="card wide">
-            <h2>Livro Caixa (base)</h2>
-            <div class="toolbar">
-              <select class="input">
-                <option>Fevereiro/2026</option>
-                <option>Janeiro/2026</option>
-              </select>
-              <button class="btn primary" type="button">+ Lançamento</button>
-            </div>
+        <!-- DOCS -->
+        <div class="view" id="view-docs">
+          <div class="grid">
+            <article class="card cardFull">
+              <h2>Documentos • Impressão Individual</h2>
+              <p class="sub">Cada documento terá template próprio (bordas elegantes, cantos arredondados, paginação perfeita).</p>
 
-            <div class="grid">
-              <article class="mini">
-                <h3>Receitas</h3>
-                <p class="metric small">R$ 9.200</p>
-              </article>
-              <article class="mini">
-                <h3>Despesas</h3>
-                <p class="metric small">R$ 2.450</p>
-              </article>
-              <article class="mini">
-                <h3>Resultado</h3>
-                <p class="metric small">R$ 6.750</p>
-              </article>
-            </div>
-          </article>
+              <div class="docGrid">
+                <button class="docBtn" type="button" onclick="alert('Template individual: Atestado')">
+                  <strong>Atestado</strong>
+                  <span>Impressão individual • layout premium</span>
+                </button>
+                <button class="docBtn" type="button" onclick="alert('Template individual: Laudo')">
+                  <strong>Laudo</strong>
+                  <span>Com ajuda da IA para complementar</span>
+                </button>
+                <button class="docBtn" type="button" onclick="alert('Template individual: Orçamento')">
+                  <strong>Orçamento</strong>
+                  <span>Modelo elegante e claro</span>
+                </button>
+                <button class="docBtn" type="button" onclick="alert('Template individual: Recibo')">
+                  <strong>Recibo</strong>
+                  <span>Com dados do profissional</span>
+                </button>
+                <button class="docBtn" type="button" onclick="alert('Template individual: Receita')">
+                  <strong>Receita</strong>
+                  <span>Cabeçalho e rodapé configuráveis</span>
+                </button>
+                <button class="docBtn" type="button" onclick="alert('Gera PDF: anexos (fotos/radiografias)')">
+                  <strong>PDF de Anexos</strong>
+                  <span>Fotos + radiografias em um PDF</span>
+                </button>
+              </div>
+
+              <p class="sub" style="margin-top:12px">
+                Quando você pedir, eu te entrego o template de impressão “perfeito” de cada documento (com @media print e paginação).
+              </p>
+            </article>
+          </div>
+        </div>
+
+        <!-- FINANCE -->
+        <div class="view" id="view-finance">
+          <div class="grid">
+            <article class="card cardSm">
+              <h2>Receitas (mês)</h2>
+              <div class="metric">R$ 9.2k</div>
+              <p class="sub">Entradas no livro caixa</p>
+            </article>
+            <article class="card cardSm">
+              <h2>Despesas (mês)</h2>
+              <div class="metric">R$ 2.45k</div>
+              <p class="sub">Materiais, laboratório, etc.</p>
+            </article>
+            <article class="card cardSm">
+              <h2>Resultado</h2>
+              <div class="metric">R$ 6.75k</div>
+              <p class="sub">Meta e alcance</p>
+            </article>
+
+            <article class="card cardFull">
+              <h2>Lançamentos</h2>
+              <div class="toolbar">
+                <select>
+                  <option>Fevereiro/2026</option>
+                  <option>Janeiro/2026</option>
+                </select>
+                <button class="btn btnPrimary" type="button" onclick="alert('Aqui abre: Novo lançamento')">+ Lançamento</button>
+                <button class="btn btnGhost" type="button" onclick="alert('Aqui gera relatório PDF mensal')">Relatório PDF</button>
+              </div>
+
+              <div class="table">
+                <div class="row head">
+                  <div>Descrição</div><div>Valor</div><div>Tipo</div><div>Ação</div>
+                </div>
+                <div class="row">
+                  <div>Consulta • Maria Silva</div><div>R$ 250</div><div>Receita</div><div><span class="pillTiny">Ver</span></div>
+                </div>
+                <div class="row">
+                  <div>Material • Resina</div><div>R$ 120</div><div>Despesa</div><div><span class="pillTiny">Ver</span></div>
+                </div>
+              </div>
+            </article>
+          </div>
         </div>
 
         <!-- CONFIG -->
         <div class="view" id="view-config">
-          <article class="card wide">
-            <h2>Configurações (base)</h2>
-            <p class="muted">Aqui entram dados do profissional (cabeçalho/rodapé em receitas e documentos).</p>
+          <div class="grid">
+            <article class="card cardLg">
+              <h2>Configurações do Profissional</h2>
+              <p class="sub">Esses dados vão no cabeçalho/rodapé das receitas e documentos.</p>
 
-            <div class="form">
-              <label class="label">
-                Nome profissional
-                <input class="input" id="cfgName" placeholder="Ex: Dr. Orlando" />
-              </label>
-
-              <label class="label">
-                Tipo
-                <select class="input" id="cfgTitle">
+              <div class="toolbar">
+                <input class="input" id="cfgName" placeholder="Nome (ex.: Dr. Orlando)" />
+                <select id="cfgGender">
                   <option value="dr">Doutor</option>
                   <option value="dra">Doutora</option>
                 </select>
-              </label>
+              </div>
 
-              <label class="label">
-                Endereço (rodapé)
-                <input class="input" id="cfgAddress" placeholder="Rua, número, bairro, cidade" />
-              </label>
+              <div class="toolbar">
+                <input class="input" id="cfgHeader" placeholder="Cabeçalho (CRM/CRO, especialidade...)" />
+              </div>
+              <div class="toolbar">
+                <input class="input" id="cfgFooter" placeholder="Rodapé (endereço, telefone, e-mail)" />
+              </div>
 
-              <button class="btn primary" id="saveConfig" type="button">Salvar</button>
-            </div>
-          </article>
+              <div class="toolbar">
+                <button class="btn btnPrimary" id="saveCfg" type="button">Salvar</button>
+                <button class="btn btnGhost" id="resetCfg" type="button">Resetar</button>
+              </div>
+            </article>
+
+            <article class="card cardMd">
+              <h2>Prévia</h2>
+              <p class="sub" id="previewLine1">Bom dia, Dr(a). Orlando</p>
+              <p class="sub" id="previewLine2">Como você está hoje?</p>
+              <p class="sub" style="margin-top:10px">Depois a gente liga isso na sua IA estilo “JARVIS”.</p>
+            </article>
+          </div>
         </div>
       </section>
 
       <footer class="footer">
-        <span class="muted">© 2026 • Prontuário Clínico PWA</span>
-        <span class="muted">Offline + Tema + Instalável</span>
+        <span>© 2026 • Prontuário Clínico</span>
+        <span>Layout final (arquivo único) • Claro/Escuro</span>
       </footer>
     </main>
   </div>
 
-  <script src="./app.js"></script>
+  <script>
+    // =========================
+    // APP LOGIC (single-file)
+    // =========================
+    (function(){
+      const THEME_KEY = "prontuario_theme";
+      const CFG_KEY = "prontuario_cfg";
+
+      const html = document.documentElement;
+      const metaTheme = document.getElementById("themeColorMeta");
+
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("overlay");
+      const hamburger = document.getElementById("hamburger");
+
+      const themeEmoji = document.getElementById("themeEmoji");
+      const themeText = document.getElementById("themeText");
+      const toggleThemeBtn = document.getElementById("toggleTheme");
+
+      const pageTitle = document.getElementById("pageTitle");
+      const pageSubtitle = document.getElementById("pageSubtitle");
+
+      const profNameTop = document.getElementById("profNameTop");
+      const profRoleTop = document.getElementById("profRoleTop");
+
+      const cfgName = document.getElementById("cfgName");
+      const cfgGender = document.getElementById("cfgGender");
+      const cfgHeader = document.getElementById("cfgHeader");
+      const cfgFooter = document.getElementById("cfgFooter");
+      const saveCfg = document.getElementById("saveCfg");
+      const resetCfg = document.getElementById("resetCfg");
+
+      const previewLine1 = document.getElementById("previewLine1");
+      const previewLine2 = document.getElementById("previewLine2");
+
+      const viewTitles = {
+        dash: { title: "Dashboard", subtitle: "Visão geral do consultório" },
+        agenda: { title: "Agenda", subtitle: "Calendário visível e atendimentos" },
+        pacientes: { title: "Pacientes", subtitle: "Cadastro e histórico clínico" },
+        soap: { title: "Ficha SOAP", subtitle: "Atendimento e procedimentos do dia" },
+        docs: { title: "Documentos", subtitle: "Impressão individual e PDFs" },
+        finance: { title: "Livro Caixa", subtitle: "Metas, materiais e resultados" },
+        config: { title: "Configurações", subtitle: "Dados do profissional e documentos" }
+      };
+
+      function setTheme(theme){
+        html.setAttribute("data-theme", theme);
+        const isDark = theme === "dark";
+        themeEmoji.textContent = isDark ? "☀️" : "🌙";
+        themeText.textContent = isDark ? "Modo claro" : "Modo escuro";
+        if (metaTheme) metaTheme.setAttribute("content", isDark ? "#0b1220" : "#f6f7fb");
+        localStorage.setItem(THEME_KEY, theme);
+      }
+
+      function initTheme(){
+        const saved = localStorage.getItem(THEME_KEY);
+        if (saved === "light" || saved === "dark") return setTheme(saved);
+        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        setTheme(prefersDark ? "dark" : "light");
+      }
+
+      function toggleTheme(){
+        const current = html.getAttribute("data-theme") || "dark";
+        setTheme(current === "dark" ? "light" : "dark");
+      }
+
+      function openSidebar(){
+        sidebar.classList.add("open");
+        overlay.classList.add("show");
+      }
+      function closeSidebar(){
+        sidebar.classList.remove("open");
+        overlay.classList.remove("show");
+      }
+
+      function showView(key){
+        document.querySelectorAll(".view").forEach(v => v.classList.remove("show"));
+        const view = document.getElementById("view-" + key);
+        if (view) view.classList.add("show");
+
+        document.querySelectorAll(".navBtn").forEach(b => b.classList.remove("isActive"));
+        const btn = document.querySelector('.navBtn[data-view="'+key+'"]');
+        if (btn) btn.classList.add("isActive");
+
+        const meta = viewTitles[key] || { title: "Prontuário", subtitle: "" };
+        pageTitle.textContent = meta.title;
+        pageSubtitle.textContent = meta.subtitle;
+
+        if (window.matchMedia("(max-width: 860px)").matches){
+          closeSidebar();
+        }
+      }
+
+      function loadCfg(){
+        try{
+          const raw = localStorage.getItem(CFG_KEY);
+          if (!raw) return { name: "Orlando", gender: "dr", header: "", footer: "" };
+          const o = JSON.parse(raw);
+          return {
+            name: typeof o.name === "string" ? o.name : "Orlando",
+            gender: o.gender === "dra" ? "dra" : "dr",
+            header: typeof o.header === "string" ? o.header : "",
+            footer: typeof o.footer === "string" ? o.footer : ""
+          };
+        }catch{
+          return { name: "Orlando", gender: "dr", header: "", footer: "" };
+        }
+      }
+
+      function saveCfgObj(o){
+        localStorage.setItem(CFG_KEY, JSON.stringify(o));
+      }
+
+      function applyCfgToUI(cfg){
+        const prefix = cfg.gender === "dra" ? "Dra." : "Dr.";
+        const full = `${prefix} ${cfg.name || "Orlando"}`;
+
+        profNameTop.textContent = full;
+        profRoleTop.textContent = "Online • Prontuário";
+
+        previewLine1.textContent = `Bom dia, ${full}`;
+        previewLine2.textContent = `Como você está hoje?`;
+
+        if (cfgName) cfgName.value = cfg.name || "";
+        if (cfgGender) cfgGender.value = cfg.gender || "dr";
+        if (cfgHeader) cfgHeader.value = cfg.header || "";
+        if (cfgFooter) cfgFooter.value = cfg.footer || "";
+      }
+
+      // Events
+      document.querySelectorAll(".navBtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const key = btn.getAttribute("data-view");
+          if (key) showView(key);
+        });
+      });
+
+      if (hamburger){
+        hamburger.addEventListener("click", () => openSidebar());
+      }
+      if (overlay){
+        overlay.addEventListener("click", () => closeSidebar());
+      }
+
+      if (toggleThemeBtn){
+        toggleThemeBtn.addEventListener("click", toggleTheme);
+      }
+
+      const quickAction = document.getElementById("quickAction");
+      if (quickAction){
+        quickAction.addEventListener("click", () => {
+          alert("Atalho rápido: aqui você pode abrir 'Novo paciente' ou 'Novo atendimento (SOAP)'.");
+        });
+      }
+
+      if (saveCfg){
+        saveCfg.addEventListener("click", () => {
+          const obj = {
+            name: (cfgName?.value || "").trim() || "Orlando",
+            gender: cfgGender?.value === "dra" ? "dra" : "dr",
+            header: (cfgHeader?.value || "").trim(),
+            footer: (cfgFooter?.value || "").trim()
+          };
+          saveCfgObj(obj);
+          applyCfgToUI(obj);
+          alert("Configurações salvas ✅");
+        });
+      }
+
+      if (resetCfg){
+        resetCfg.addEventListener("click", () => {
+          localStorage.removeItem(CFG_KEY);
+          const cfg = loadCfg();
+          applyCfgToUI(cfg);
+          alert("Configurações resetadas ✅");
+        });
+      }
+
+      // Init
+      initTheme();
+      const cfg = loadCfg();
+      applyCfgToUI(cfg);
+      showView("dash");
+    })();
+  </script>
 </body>
 </html>
